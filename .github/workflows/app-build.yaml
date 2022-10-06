@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - f_pico_player
   pull_request:
 
 permissions:
