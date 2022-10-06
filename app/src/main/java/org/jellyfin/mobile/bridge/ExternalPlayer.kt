@@ -164,6 +164,7 @@ class ExternalPlayer(
             putExtra("playTime", source.startTimeMs.toInt())
             putExtra("return_result", true)
             putExtra("secure_uri", true)
+            putExtra("seekPlay", false)
 
             val externalSubs = source.getExternalSubtitleStreams()
             val enabledSubUrl = when {
