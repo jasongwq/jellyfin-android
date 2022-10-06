@@ -161,6 +161,7 @@ class ExternalPlayer(
             setDataAndType(Uri.parse(url), "video/*")
             putExtra("title", source.name)
             putExtra("position", source.startTimeMs.toInt())
+            putExtra("playTime", source.startTimeMs.toInt())
             putExtra("return_result", true)
             putExtra("secure_uri", true)
 
