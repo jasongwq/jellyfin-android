@@ -154,36 +154,14 @@ class ExternalPlayer(
         source.selectSubtitleStream(selectedSubtitleIndex)
 
         // Build playback intent
-        val playerIntent = Intent(Intent.ACTION_VIEW).apply {
-            if (context.packageManager.isPackageInstalled(appPreferences.externalPlayerApp)) {
-                component = getComponent(appPreferences.externalPlayerApp)
-            }
-            setDataAndType(Uri.parse(url), "video/*")
+        val playerIntent = Intent("picovr.intent.action.player").apply {
             putExtra("title", source.name)
             putExtra("position", source.startTimeMs.toInt())
-            putExtra("playTime", source.startTimeMs.toInt())
             putExtra("return_result", true)
             putExtra("secure_uri", true)
+
+            putExtra("videoType", 0)
             putExtra("seekPlay", false)
-
-            val externalSubs = source.getExternalSubtitleStreams()
-            val enabledSubUrl = when {
-                source.selectedSubtitleStream != null -> {
-                    externalSubs.find { stream -> stream.index == source.selectedSubtitleStream?.index }?.let { sub ->
-                        apiClient.createUrl(sub.deliveryUrl)
-                    }
-                }
-                else -> null
-            }
-
-            // MX Player API / MPV
-            putExtra("subs", externalSubs.map { stream -> Uri.parse(apiClient.createUrl(stream.deliveryUrl)) }.toTypedArray())
-            putExtra("subs.name", externalSubs.map(ExternalSubtitleStream::displayTitle).toTypedArray())
-            putExtra("subs.filename", externalSubs.map(ExternalSubtitleStream::language).toTypedArray())
-            putExtra("subs.enable", enabledSubUrl?.let { url -> arrayOf(Uri.parse(url)) } ?: emptyArray())
-
-            // VLC
-            if (enabledSubUrl != null) putExtra("subtitles_location", enabledSubUrl)
         }
         playerContract.launch(playerIntent)
         Timber.d("Starting playback [id=${source.itemId}, title=${source.name}, playMethod=${source.playMethod}, startTimeMs=${source.startTimeMs}]")
